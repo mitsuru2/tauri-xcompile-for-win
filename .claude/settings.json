@@ -10,7 +10,8 @@
       "Bash(rm -rf /workspaces/tauri-xcompile-for-win/src-tauri/icons/android /workspaces/tauri-xcompile-for-win/src-tauri/icons/ios *)",
       "Bash(cargo deny *)",
       "Read(//tmp/**)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(npm view *)"
     ],
     "additionalDirectories": [
       "/workspaces/tauri-xcompile-for-win/src-tauri/icons/android"

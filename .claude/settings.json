@@ -7,7 +7,10 @@
       "WebFetch(domain:github.com)",
       "Bash(python3 -c ' *)",
       "Bash(python3 -c \"import json,sys; print\\(json.load\\(sys.stdin\\)['bundle']['icon']\\)\")",
-      "Bash(rm -rf /workspaces/tauri-xcompile-for-win/src-tauri/icons/android /workspaces/tauri-xcompile-for-win/src-tauri/icons/ios *)"
+      "Bash(rm -rf /workspaces/tauri-xcompile-for-win/src-tauri/icons/android /workspaces/tauri-xcompile-for-win/src-tauri/icons/ios *)",
+      "Bash(cargo deny *)",
+      "Read(//tmp/**)",
+      "Bash(npm run *)"
     ],
     "additionalDirectories": [
       "/workspaces/tauri-xcompile-for-win/src-tauri/icons/android"

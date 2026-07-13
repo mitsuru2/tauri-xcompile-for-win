@@ -46,16 +46,14 @@ RUN npm ci
 USER root
 
 # Tauri v2 Windows クロスコンパイル用ツールチェイン
-# - このコンテナ (Linux) では Windows 向け exe の生成のみを行う。
-#   Windows インストーラー (NSIS/MSI) は作成しないため、NSIS 等は導入しない。
-#   インストーラーは別途 Inno Setup (Windows側) で作成する想定。
-# - Tauri は Windows ターゲットとして MSVC (x86_64-pc-windows-msvc) を正式サポートしているため、
-#   GNU (mingw-w64) ではなく cargo-xwin (clang/lld + Windows SDK/CRT の自動取得) を使う。
-# - cargo-xwin は llvm-ar/lld-link 等を必要とするが、上記で導入済みの apt 版 llvm/lld/clang
-#   (PATH上にある) で満たされるため、rustup component add llvm-tools は導入しない
+# - cargo-xwin: Windows クロスコンパイル用ランナー。
+#               Tauri は Windows ターゲットとして MSVC (x86_64-pc-windows-msvc) を正式サポートしているため。
+#               llvm-ar/lld-link 等は apt 版インストール済のため rustup component add での導入は不要。
+# - cargo-deny: ライセンス監査 (GPL系コピーレフトライセンスのクレートが依存関係に
+#               紛れ込んでいないかを src-tauri/deny.toml の許可リストでチェックする
 RUN rustup target add x86_64-pc-windows-msvc
 USER node
-RUN cargo install --locked cargo-xwin \
+RUN cargo install --locked cargo-xwin cargo-deny \
     && mkdir -p /app/.cache/cargo-xwin
 USER root
 
@@ -64,12 +62,9 @@ USER root
 EXPOSE 4200 4000
 
 # 環境変数設定 (固定)
-# - Angular メトリクスデータ送信プロンプト抑制
+# - NG_CLI_ANALYTICS: Angular メトリクスデータ送信プロンプト抑制
+# - XWIN_CACHE_DIR: ダウンロードした Windows SDK/CRT (約1GB) のキャッシュ先を固定。
 ENV NG_CLI_ANALYTICS=false
-# - cargo-xwin: ダウンロードした Windows SDK/CRT (約1GB) のキャッシュ先を固定。
-#   ユーザー名変更の影響を受けないよう /home/<user> 配下ではなく WORKDIR (/app) 配下に置く。
-#   devcontainer.json 側でこのパスを名前付きボリュームにマウントし、
-#   コンテナ再構築 (Rebuild Container) をまたいで再ダウンロードを防ぐ。
 ENV XWIN_CACHE_DIR=/app/.cache/cargo-xwin
 
 # デフォルト動作 (Do nothing)

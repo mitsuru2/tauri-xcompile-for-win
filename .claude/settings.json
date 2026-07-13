@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:v2.tauri.app)",
+      "WebSearch",
+      "WebFetch(domain:www.mobzystems.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(python3 -c ' *)",
+      "Bash(python3 -c \"import json,sys; print\\(json.load\\(sys.stdin\\)['bundle']['icon']\\)\")",
+      "Bash(rm -rf /workspaces/tauri-xcompile-for-win/src-tauri/icons/android /workspaces/tauri-xcompile-for-win/src-tauri/icons/ios *)"
+    ],
+    "additionalDirectories": [
+      "/workspaces/tauri-xcompile-for-win/src-tauri/icons/android"
+    ]
+  }
+}

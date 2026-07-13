@@ -32,5 +32,10 @@
   "remoteUser": "node",
 
   // Add the Azure volumes to the container to keep credentials persistent.
-  "mounts": ["source=claude,target=/home/node/.claude,type=volume"]
+  // cargo-xwin (Tauri Windows クロスコンパイル用) がダウンロードする Windows SDK/CRT (約1GB) は
+  // コンテナ再構築のたびに再取得しないようボリュームで永続化する。
+  "mounts": [
+    "source=claude,target=/home/node/.claude,type=volume",
+    "source=cargo-xwin-cache,target=/app/.cache/cargo-xwin,type=volume"
+  ]
 }

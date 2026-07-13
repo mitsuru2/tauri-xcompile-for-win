@@ -11,6 +11,12 @@ publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+# LNK4099 (静的CRTライブラリのPDB参照が見つからない旨のリンカ警告)は
+# clang-cl/lld-linkでMicrosoft公式のCRT静的ライブラリをリンクする際に
+# 常態的に発生する無害な警告のため抑制する。
+[lints.rust]
+linker_messages = "allow"
+
 [lib]
 name = "app_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
@@ -24,3 +30,4 @@ serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
 tauri = { version = "2.11.3", features = [] }
 tauri-plugin-log = "2"
+tauri-plugin-opener = "2.5.4"

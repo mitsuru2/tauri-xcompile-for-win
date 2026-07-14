@@ -1,0 +1,176 @@
+name: Basic Check
+
+on:
+  push
+
+# publish-docker-image.yml が main ブランチへの push 時に
+# ghcr.io/<owner>/<repo>:main としてビルド・プッシュしている最新イメージを
+# 各ジョブの container.image で使用する。
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    container:
+      image: ghcr.io/${{ github.repository }}:main
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        id: lint
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          npm run lint 2>&1 | tee lint.log
+
+      - name: Write job summary
+        if: always()
+        run: |
+          {
+            echo "## Lint"
+            if [ "${{ steps.lint.outcome }}" = "success" ]; then
+              echo "✅ Success"
+            else
+              echo "❌ Failed"
+            fi
+            echo
+            echo '<details><summary>Log</summary>'
+            echo
+            echo '```'
+            cat lint.log
+            echo '```'
+            echo '</details>'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail job if lint failed
+        if: steps.lint.outcome != 'success'
+        run: exit 1
+
+  vitest:
+    name: Vitest
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    container:
+      image: ghcr.io/${{ github.repository }}:main
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        id: vitest
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          npm test -- --no-watch 2>&1 | tee vitest.log
+
+      - name: Write job summary
+        if: always()
+        run: |
+          {
+            echo "## Vitest"
+            if [ "${{ steps.vitest.outcome }}" = "success" ]; then
+              echo "✅ Success"
+            else
+              echo "❌ Failed"
+            fi
+            echo
+            echo '<details><summary>Log</summary>'
+            echo
+            echo '```'
+            cat vitest.log
+            echo '```'
+            echo '</details>'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail job if unit tests failed
+        if: steps.vitest.outcome != 'success'
+        run: exit 1
+
+  license-check:
+    name: License Check (GPL)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    container:
+      image: ghcr.io/${{ github.repository }}:main
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check npm (Angular) dependency licenses
+        id: ng_gpl
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          npm run ng:check:gpl 2>&1 | tee ng-gpl.log
+
+      - name: Check Rust (Tauri) dependency licenses
+        id: tauri_gpl
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          npm run tauri:check:gpl 2>&1 | tee tauri-gpl.log
+
+      - name: Write job summary
+        if: always()
+        run: |
+          {
+            echo "## License Check (GPL)"
+            echo
+            echo "### npm (ng:check:gpl)"
+            if [ "${{ steps.ng_gpl.outcome }}" = "success" ]; then
+              echo "✅ Success"
+            else
+              echo "❌ Failed"
+            fi
+            echo
+            echo '<details><summary>Log</summary>'
+            echo
+            echo '```'
+            cat ng-gpl.log
+            echo '```'
+            echo '</details>'
+            echo
+            echo "### Rust / Tauri (tauri:check:gpl)"
+            if [ "${{ steps.tauri_gpl.outcome }}" = "success" ]; then
+              echo "✅ Success"
+            else
+              echo "❌ Failed"
+            fi
+            echo
+            echo '<details><summary>Log</summary>'
+            echo
+            echo '```'
+            cat tauri-gpl.log
+            echo '```'
+            echo '</details>'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail job if any license check failed
+        if: steps.ng_gpl.outcome != 'success' || steps.tauri_gpl.outcome != 'success'
+        run: exit 1

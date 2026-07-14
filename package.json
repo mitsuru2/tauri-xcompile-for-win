@@ -14,7 +14,7 @@
     "tauri:build:release": "./scripts/tauri-build.sh --runner cargo-xwin --target x86_64-pc-windows-msvc --no-bundle",
     "tauri:build:debug": "./scripts/tauri-build.sh --debug --runner cargo-xwin --target x86_64-pc-windows-msvc --no-bundle",
     "tauri:check:gpl": "cd src-tauri && cargo deny check licenses",
-    "ng:check:gpl": "license-checker-rseidelsohn --production=false --excludePackages \"tauri-xcompile-for-win@0.0.0\" --onlyAllow \"MIT;ISC;Apache-2.0;BSD-2-Clause;BSD-3-Clause;BlueOak-1.0.0;MIT-0;CC0-1.0;CC-BY-4.0;CC-BY-3.0;0BSD\" --summary"
+    "ng:check:gpl": "license-checker-rseidelsohn --production=false --excludePackages \"tauri-xcompile-for-win@0.0.0\" --excludePackagesStartingWith \"@primeicons/;@primeui/;@primeuix/;primeng@\" --onlyAllow \"MIT;ISC;Apache-2.0;BSD-2-Clause;BSD-3-Clause;BlueOak-1.0.0;MIT-0;CC0-1.0;CC-BY-4.0;CC-BY-3.0;0BSD\" --summary"
   },
   "private": true,
   "packageManager": "npm@11.16.0",

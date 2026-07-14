@@ -1,5 +1,6 @@
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+  println!("[debug] app_lib::run() called");
   tauri::Builder::default()
     .setup(|app| {
       if cfg!(debug_assertions) {

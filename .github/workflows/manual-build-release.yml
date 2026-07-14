@@ -1,0 +1,54 @@
+name: Manual Build for Release
+
+on:
+  workflow_dispatch:
+
+# publish-docker-image.yml が main ブランチへの push 時に
+# ghcr.io/<owner>/<repo>:main としてビルド・プッシュしている最新イメージを
+# ビルド環境として使用する。
+
+jobs:
+  build:
+    name: Build Windows Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    container:
+      image: ghcr.io/${{ github.repository }}:main
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          ref: main
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Windows release
+        run: npm run tauri:build:release
+
+      - name: Upload app.exe artifact
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: app.exe
+          path: src-tauri/target/x86_64-pc-windows-msvc/release/app.exe
+          retention-days: 3
+
+      - name: Write job summary
+        if: always()
+        run: |
+          {
+            echo "## Manual Build for Release"
+            if [ "${{ steps.upload.outcome }}" = "success" ]; then
+              echo "✅ app.exe をビルドし、Artifact に登録しました（保持期間: 3日）。"
+              echo
+              echo "[app.exe をダウンロード](${{ steps.upload.outputs.artifact-url }})"
+            else
+              echo "❌ ビルドまたは Artifact 登録に失敗しました。"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

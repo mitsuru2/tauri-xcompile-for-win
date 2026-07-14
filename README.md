@@ -88,7 +88,7 @@ npm run tauri:check:gpl   # Rust (Tauri) 依存関係
 ├── .github/workflows/      # CI（Lint/テスト/ライセンスチェック、イメージパブリッシュ）
 ├── scripts/                # ビルド補助スクリプト
 ├── src/                    # Angular フロントエンドソース
-└── src-tauri/               # Tauri (Rust) バックエンドソース
+└── src-tauri/              # Tauri (Rust) バックエンドソース
 ```
 
 ## ライセンス

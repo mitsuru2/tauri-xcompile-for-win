@@ -63,6 +63,14 @@ npm run tauri:build:debug
 
 内部では [`scripts/tauri-build.sh`](scripts/tauri-build.sh) 経由で `tauri build --runner cargo-xwin --target x86_64-pc-windows-msvc` を実行し、Linux 上から Windows 向け実行ファイルを生成します。
 
+## リリース用ビルド（GitHub Actions・手動実行）
+
+[`.github/workflows/manual-build-release.yml`](.github/workflows/manual-build-release.yml) から、GitHub Actions の Actions タブで手動実行（`workflow_dispatch`）することで、`main` ブランチの最新ソースと GHCR の最新イメージを使ってリリースビルドを行えます。
+
+- `npm run tauri:build:release` を実行し、生成された `app.exe` を Artifact（`app.exe`、保持期間 3 日）として登録します
+- ダウンロードリンクはジョブサマリーに表示されます
+- ビルド前に、リポジトリの Secrets（Settings → Secrets and variables → Actions）に `PRIMENG_LICENSE_KEY` を登録しておく必要があります（未設定の場合、[`scripts/generate-license.sh`](scripts/generate-license.sh) がビルドを失敗させます）
+
 ## テスト・Lint・ライセンスチェック
 
 ```bash
@@ -85,7 +93,7 @@ npm run tauri:check:gpl   # Rust (Tauri) 依存関係
 .
 ├── Dockerfile              # 開発・CI 共通の開発環境イメージ定義
 ├── .devcontainer/          # VS Code Dev Containers 設定
-├── .github/workflows/      # CI（Lint/テスト/ライセンスチェック、イメージパブリッシュ）
+├── .github/workflows/      # CI（Lint/テスト/ライセンスチェック、イメージパブリッシュ、リリース用手動ビルド）
 ├── scripts/                # ビルド補助スクリプト
 ├── src/                    # Angular フロントエンドソース
 └── src-tauri/              # Tauri (Rust) バックエンドソース

@@ -29,6 +29,8 @@ jobs:
         run: npm ci
 
       - name: Build Windows release
+        env:
+          PRIMENG_LICENSE_KEY: ${{ secrets.PRIMENG_LICENSE_KEY }}
         run: npm run tauri:build:release
 
       - name: Upload app.exe artifact

@@ -10,6 +10,7 @@ TMP_PATH="$OUTPUT_PATH.tmp"
 LICENSE_KEY="${PRIMENG_LICENSE_KEY:-}"
 if [ -z "$LICENSE_KEY" ]; then
   echo "[generate-license] PRIMENG_LICENSE_KEY が未設定です。.devcontainer/secrets.env を確認してください。" >&2
+  exit 1
 fi
 
 mkdir -p "$OUTPUT_DIR"
